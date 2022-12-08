@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 
-// let baseUrl = "";
-// if (window.location.href.split(":")[0] === "http") {
-//   baseUrl = "http://localhost:4000";
-// } else {
-//   baseUrl = "https://";
-// }
+let baseUrl = "";
+if (window.location.href.split(":")[0] === "http") {
+  baseUrl = "http://localhost:4000";
+} else {
+  baseUrl = "https://wild-tan-narwhal-kilt.cyclic.app/";
+}
 
 function App() {
   const [postName, setpostName] = useState("");
@@ -28,7 +28,7 @@ function App() {
   // }, [getData]);
   const AllProduct = ()=>{
     axios
-      .get("http://localhost:4000/products")
+      .get(`${baseUrl}/products`)
       .then((response) => {
         // console.log(response.data);
           setgetData(response.data.products);
@@ -40,7 +40,7 @@ function App() {
 }
   const SavePost = () => {
     axios
-      .post(`http://localhost:4000/product`, {
+      .post(`${baseUrl}/product`, {
         name: postName,
         price: postPrice,
         description: postDescription,
@@ -55,7 +55,7 @@ function App() {
   const DeletePost = (postId) => {
     // console.log(postId);
     axios
-      .delete(`http://localhost:4000/product/${postId}`)
+      .delete(`${baseUrl}/product/${postId}`)
       .then((response) => {
         // console.log(response.data);
       })
@@ -67,7 +67,7 @@ function App() {
     // console.log(ProductId);
     e.preventDefault();
     axios
-      .get(`http://localhost:4000/product/${ProductId}`)
+      .get(`${baseUrl}/product/${ProductId}`)
       .then((response) => {
         // console.log(response.data.data);
         // setgetData(response.data.data);
@@ -81,7 +81,7 @@ function App() {
   const UpdatePost = (e) => {
     // console.log(Editing.editingId);
     axios
-      .put(`http://localhost:4000/product/${Editing.editingId}`, {
+      .put(`${baseUrl}/product/${Editing.editingId}`, {
         name: Editing.editingName,
         price: Editing.editingPrice,
         description: Editing.editingDescription,

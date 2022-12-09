@@ -27,6 +27,7 @@ function App() {
     
   // }, [getData]);
   const AllProduct = ()=>{
+   
     axios
       .get(`${baseUrl}/products`)
       .then((response) => {
@@ -38,7 +39,8 @@ function App() {
         console.log("err", err);
       });
 }
-  const SavePost = () => {
+  const SavePost = (e) => {
+    e.preventDefault();
     axios
       .post(`${baseUrl}/product`, {
         name: postName,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
+import OneProduct from "./oneProduct";
 
 let baseUrl = "";
 if (window.location.href.split(":")[0] === "http") {
@@ -14,72 +15,50 @@ function App() {
   const [postPrice, setpostPrice] = useState();
   const [postDescription, setpostDescription] = useState("");
   const [getData, setgetData] = useState();
-  // const [ProductData, setProductData] = useState();
   const [istrue, setistrue] = useState(false);
-  const [ProductId, setProductId] = useState("");
+  const [isEdit, setisEdit] = useState(false);
   const [Editing, setEditing] = useState({
     editingId: null,
     editingName: "",
     editingPrice: "",
     editingDescription: "",
   });
-  // useEffect(() => {
-    
-  // }, [getData]);
-  const AllProduct = ()=>{
+  const AllProduct = () => {
     axios
       .get(`${baseUrl}/products`)
       .then((response) => {
         // console.log(response.data);
-          setgetData(response.data.products);
-          setistrue(!istrue)
+        setgetData(response.data.products);
       })
       .catch((err) => {
         console.log("err", err);
       });
-}
-  const SavePost = () => {
-    axios
-      .post(`${baseUrl}/product`, {
+  };
+
+  const SavePost = (e) => {
+    e.preventDefault();
+    try {
+      axios.post(`${baseUrl}/product`, {
         name: postName,
         price: postPrice,
         description: postDescription,
-      })
-      .then((response) => {
-        console.log("ok");
-      })
-      .catch((err) => {
-        console.log("err", err);
       });
+      setistrue(!istrue);
+    } catch (err) {
+      console.log("err", err);
+    }
   };
   const DeletePost = (postId) => {
-    // console.log(postId);
-    axios
-      .delete(`${baseUrl}/product/${postId}`)
-      .then((response) => {
-        // console.log(response.data);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-  const Product = (e) => {
-    // console.log(ProductId);
-    e.preventDefault();
-    axios
-      .get(`${baseUrl}/product/${ProductId}`)
-      .then((response) => {
-        // console.log(response.data.data);
-        // setgetData(response.data.data);
-        setgetData([response.data.data])
-        setistrue(!istrue)
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    try {
+      axios.delete(`${baseUrl}/product/${postId}`);
+      setistrue(!istrue);
+    } catch (err) {
+      console.log("err", err);
+    }
   };
   const UpdatePost = (e) => {
-    // console.log(Editing.editingId);
+    e.preventDefault();
+
     axios
       .put(`${baseUrl}/product/${Editing.editingId}`, {
         name: Editing.editingName,
@@ -87,7 +66,8 @@ function App() {
         description: Editing.editingDescription,
       })
       .then((response) => {
-        // console.log(response);
+        setistrue(!istrue);
+        setisEdit(!isEdit);
       });
     setEditing({
       editingId: null,
@@ -95,12 +75,13 @@ function App() {
       editingPrice: "",
       editingDescription: "",
     });
-    e.preventDefault();
   };
+  useEffect(() => {
+    AllProduct();
+  }, [istrue]);
   return (
     <>
       <div>
-
         <form onSubmit={SavePost} className="form">
           <input
             className="input"
@@ -108,7 +89,6 @@ function App() {
             placeholder="Product name"
             onChange={(e) => {
               setpostName(e.target.value);
-              // console.log(e.target.value);
             }}
           />
           <input
@@ -117,7 +97,6 @@ function App() {
             placeholder="price"
             onChange={(e) => {
               setpostPrice(e.target.value);
-              // console.log(e.target.value);
             }}
           />
           <input
@@ -126,43 +105,24 @@ function App() {
             placeholder="description"
             onChange={(e) => {
               setpostDescription(e.target.value);
-              // console.log(e.target.value);
             }}
           />
-          <input type="submit" className="button"value='SetPost' / >
-            
-          
-
+          <input type="submit" className="button" value="SetPost" />
         </form>
-
-        <div className="form newdiv">
-          <form onSubmit={Product}>
-
-          <input
-            required
-            type="number"
-            className="input"
-            onChange={(e) => {
-              setProductId(e.target.value);
-            }}
-            placeholder="Please Enter Id"
-            />
-          <input type="submit" className="button" value='Get 1'/>
-            </form>
-          <button onClick={AllProduct} className="button">Get All</button>
-
-        </div>
         <div className="body">
           <div className="flex">
-            {
-            getData?.map((eachPost, i) => {
+            {getData?.map((eachPost, i) => {
               return (
                 <div className="post" key={i}>
                   <div className="postText">
-                  <p className="overflow">{(eachPost.id === Editing.editingId)? null: `Id :` +eachPost?.id}</p>
+                    <p className="overflow">
+                      {isEdit && eachPost.id === Editing.editingId
+                        ? null
+                        : `Id :` + eachPost?.id}
+                    </p>
 
-                    <h3 className="postDescr"> 
-                      {eachPost.id === Editing.editingId ? (
+                    <h3 className="postDescr overflow" >
+                      {isEdit && eachPost.id === Editing.editingId ? (
                         <form className="NextForm" onSubmit={UpdatePost}>
                           <input
                             type="text"
@@ -200,24 +160,36 @@ function App() {
                             }}
                             placeholder="description"
                           />
-                          <input type="submit" className="button next" value='Update'/>
+                          <input
+                            type="submit"
+                            className="button next"
+                            value="Update"
+                          />
                         </form>
                       ) : (
                         `Name :` + eachPost?.name
                       )}
                     </h3>
-                
-                    <span >{(eachPost.id === Editing.editingId)? null: `Price :` + eachPost?.price}</span>
-                    <p className="overflow">{(eachPost.id === Editing.editingId)? null: `Description :` + eachPost?.description}</p>
-                <div style={{margin:'10px auto'}}>
-                    <button className="button"
-                      onClick={() => {
-                        DeletePost(eachPost?.id);
-                      }}
-                    >
-                      Delete
-                    </button>
-                    {Editing.editingId === eachPost?.id ? null : (
+
+                    <span className="overflow">
+                      {isEdit && eachPost.id === Editing.editingId
+                        ? null
+                        : `Price :` + eachPost?.price}
+                    </span>
+                    <p className="overflow">
+                      {isEdit && eachPost.id === Editing.editingId
+                        ? null
+                        : `Description :` + eachPost?.description}
+                    </p>
+                    <div style={{ margin: "10px auto" }}>
+                      <button
+                        className="button"
+                        onClick={() => {
+                          DeletePost(eachPost?.id);
+                        }}
+                      >
+                        Delete
+                      </button>
                       <button
                         className="button"
                         onClick={() => {
@@ -227,22 +199,18 @@ function App() {
                             editingPrice: eachPost?.price,
                             editingDescription: eachPost?.description,
                           });
-                          // console.log(eachPost.id);
+                          setisEdit(!isEdit);
                         }}
                       >
                         Edit
                       </button>
-                    )}
-                  </div> 
-
+                    </div>
                   </div>
                 </div>
               );
-            })  
-            
-            }
+            })}
           </div>
-
+          <OneProduct className="newcomponent" />
         </div>
       </div>
     </>
@@ -250,4 +218,3 @@ function App() {
 }
 
 export default App;
-//

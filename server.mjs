@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 let products = []; // TODO: connect with mongodb instead
+  //mongodb url mongodb+srv://abc:abc@cluster0.qgyid76.mongodb.net/?retryWrites=true&w=majority
 
 app.post("/product", (req, res) => {
   const body = req.body;
@@ -74,7 +75,7 @@ console.log(id);
 
 app.delete("/product/:id", (req, res) => {
     const id = req.params.id;
-    // console.log( 'get id',id);
+    console.log( 'get id',id);
 
     let isFound = false;
     for (let i = 0; i < products.length; i++) {

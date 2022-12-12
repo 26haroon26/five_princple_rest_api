@@ -30,7 +30,7 @@ function App() {
         const response = await axios.get(`${baseUrl}/products`)
         console.log("response: ", response.data);
   
-        setgetData(response.data.products)
+        setgetData(response?.data?.products)
   
       } catch (error) {
         console.log("error in getting all products", error);

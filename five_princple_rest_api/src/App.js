@@ -23,18 +23,21 @@ function App() {
     editingPrice: "",
     editingDescription: "",
   });
-  const AllProduct = () => {
-    axios
-      .get(`${baseUrl}/products`)
-      .then((response) => {
-        // console.log(response.data);
-        setgetData(response.data.products);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
-  };
-
+  
+  useEffect(() => {
+    const AllProduct = async() => {
+      try {
+        const response = await axios.get(`${baseUrl}/products`)
+        console.log("response: ", response.data);
+  
+        setgetData(response.data.products)
+  
+      } catch (error) {
+        console.log("error in getting all products", error);
+      }
+    };
+    AllProduct();
+  }, [istrue]);
   const SavePost = (e) => {
     e.preventDefault();
     try {
@@ -48,6 +51,26 @@ function App() {
       console.log("err", err);
     }
   };
+  const UpdatePost = (e) => {
+    e.preventDefault();
+    
+    axios
+    .put(`${baseUrl}/product/${Editing.editingId}`, {
+      name: Editing.editingName,
+      price: Editing.editingPrice,
+      description: Editing.editingDescription,
+    })
+    .then((response) => {
+      setistrue(!istrue);
+      setisEdit(!isEdit);
+    });
+    setEditing({
+      editingId: null,
+      editingName: "",
+      editingPrice: "",
+      editingDescription: "",
+    });
+  };
   const DeletePost = (postId) => {
     try {
       axios.delete(`${baseUrl}/product/${postId}`);
@@ -56,29 +79,6 @@ function App() {
       console.log("err", err);
     }
   };
-  const UpdatePost = (e) => {
-    e.preventDefault();
-
-    axios
-      .put(`${baseUrl}/product/${Editing.editingId}`, {
-        name: Editing.editingName,
-        price: Editing.editingPrice,
-        description: Editing.editingDescription,
-      })
-      .then((response) => {
-        setistrue(!istrue);
-        setisEdit(!isEdit);
-      });
-    setEditing({
-      editingId: null,
-      editingName: "",
-      editingPrice: "",
-      editingDescription: "",
-    });
-  };
-  useEffect(() => {
-    AllProduct();
-  }, [istrue]);
   return (
     <>
       <div>
